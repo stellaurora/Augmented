@@ -7,7 +7,7 @@
 
 Augmented Ascension
 ======
-A symplistic PYGAME rpg.
+A symplistic PYGAME rpg. created using the modules: 'random','sys','os','pygame' and 'time' This is the current repository for it. 
 
 Credits:
 -----
