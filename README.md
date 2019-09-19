@@ -7,7 +7,7 @@
 
 Augmented Ascension
 ======
-A symplistic PYGAME rpg.\
+A symplistic PYGAME rpg.&nbsp;
 
-Credits:
+Credits:&nbsp;
 [Dippyshere](github.com/dippyshere "He's a person with a face")
