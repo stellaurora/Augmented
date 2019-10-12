@@ -7,7 +7,9 @@
 
 Augmented Ascension
 ======
-[![Github All Releases](https://img.shields.io/github/downloads/atom/atom/total.svg)]()
+[![Github All Releases](https://img.shields.io/github/downloads/jean1398reborn/Augmented/total.svg)]()
+
+
 A symplistic rpg created using:
 
 
