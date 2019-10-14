@@ -5,18 +5,18 @@ from pygame.locals import *
 pygame.init()
 
 
-#CONTROL BINDING
+#CONTROL BINDING
 binds = []
 with open('Settings/controls.txt','r') as data:
     csv_reader = csv.reader(data)
     for row in csv_reader:
         binds.append(row)
     data.close()
-    
 defaultbinds = [
     ('w','a','s','d','1','2','3','4'),
     ('up','left','down','right','o','p','[',']')
                 ]
+print(binds)
 
 print(binds)
 #MAPS
@@ -31,7 +31,11 @@ movesets = [('Bow Kid',
              [('Ranger',
                [('Description', '+ 10% Extra movement speed'),
                 ('Boost', 'Movement'),
-                ('Amount', 10)]
+                ('Amount', 10),
+                ('Stats', [
+                    ('Health', 100),
+                    ('Speed', 5)])
+                 ]
                  ),
               ("Death's Whisper",
                [('Description','Launch an arrow which deals ( 1 ) damage'),
@@ -68,7 +72,11 @@ movesets = [('Bow Kid',
              [('Blessing of the ocean',
                [('Description', 'When an enemy is hit slows for 20% for 1 second'),
                 ('Boost', 'Debuff Slow'),
-                ('Amount', 20)]
+                ('Amount', 20),
+                ('Stats', [
+                    ('Health', 80),
+                    ('Speed', 30)])
+                ]
                  ),
               ("Shifting Tides",
                [('Description','Create a mystical water bolt which deals ( 2 ) damage.'),
@@ -137,7 +145,7 @@ class frame():
                 return True
         elif 300 < v[0]  < 905 and 502 < v[1] < 530:
             if mouse[0] == 1:
-                game.game(0,0,0,win,items,particles)
+                game.game(0,1,1,win,items,particles,'newfunkcity')
                 return False
                 
             else:
@@ -226,16 +234,44 @@ class game():
                 
             pos = pygame.mouse.get_pos()
             running = frame.check(mouse,pos,top2,win,top,items,particles,pa)
-    def game(player1,player2,mapselected,win,items,particles):
+    def game(player1,player2,mapselected,win,items,particles,mapselectedd):
+        left = 'left'
+        right = 'right'
+        dir1 = right
+        dir2 = left
+        moveright1 = False
+        settings = [False] #first one is gravity acceleration
+        attacks = {'p1': [],'p2': []}
+        moveleft1 = False
+        jump1 = 0
+        jumping = False
+        delay = 0
+        previously = {'p1': 1, 'p2': 1}
+        moveright2 = False
+        moveleft2 = False
+        jump2 = 0
+        jumping2 = False
+        delay2 = 0
         p1m = movesets[player1]
+        print(p1m[1][1])
         top = pygame.image.load('aatopbar2.png')
         top2 = pygame.image.load('aatopbar.png')
         p2m = movesets[player2]
-        frame.clearupdate([maps[mapselected],top],win)
-        gravity = os.path.splitext(maplist[mapselected+1])[0]
+        hp1 = int(p1m[1][0][1][3][1][0][1])
+        hp2 = int(p2m[1][0][1][3][1][0][1])
+        p1mspeed = int(p1m[1][0][1][3][1][1][1])
+        p2mspeed = int(p2m[1][0][1][3][1][1][1])
+        health = {'p1': hp1,'p2': hp2}
+        healthbars = {'p1': pygame.Rect(213,120,100,10),'p2': pygame.Rect(639,120,100,100)}
+        frame.clearupdate([pygame.image.load('Maps/'+mapselectedd+'.png'),top],win)
+        gravity = 9
         p1listasset = os.listdir(p1m[0])
+        p1characterassets = [pygame.image.load(p1m[0]+'/'+'front.png'),pygame.image.load(p1m[0]+'/'+'back.png')]
+        p2characterassets = [pygame.image.load(p2m[0]+'/'+'front.png'),pygame.image.load(p1m[0]+'/'+'front.png')]
         folderoverlays = os.listdir('Overlays')
-        overlays = os.listdir('Overlays/'+folderoverlays[1:][mapselected])[1:]
+        overlays = os.listdir('Overlays/'+str(mapselectedd))
+        itemzz  = overlays.index('.DS_Store')
+        del overlays[itemzz]
         overlaynames=[]
         ovamount = 0
         for i in overlays:
@@ -250,21 +286,25 @@ class game():
         for c in p2listasset[1:]:
             value = p1m[0]+'/'+c
             p2assets.append(value)
-        frame.load([p1assets,p2assets],win,[overlays,overlaynames,ovamount,'Overlays/'+folderoverlays[1:][mapselected]])
+        frame.load([p1assets,p2assets],win,[overlays,overlaynames,ovamount,'Overlays/'+mapselectedd])
         running = True
-        locations = {'p1': (430,300) ,'p2': (850,300)}
+        locations = {'p1': (0,0) ,'p2': (850,300)}
+        healthbars = {'p1': pygame.Rect(213,120,200,30),'p2': pygame.Rect(639,120,100,100)}
         p1assetstemp=[]
         p2assetstemp=[]
-        width1,height1=imagesize.get(p1assets[0])
-        width2,height2=imagesize.get(p2assets[0])
+        width1,height1=imagesize.get(p1m[0]+'/'+'front.png')
+        width2,height2=imagesize.get(p2m[0]+'/'+'front.png')
         hitbox1 = pygame.Rect(430, 300, width1, height1)
-        hitbox2 = pygame.Rect(850, 300, width2, height2)  
+        hitbox2 = pygame.Rect(850, 300, width2, height2)
         pygame.display.update()
         hitboxes = [hitbox1,hitbox2]
         obstacles = []
         obstaclenames = []
+        font = pygame.font.Font("Demonized.ttf",64)
+        font2 = pygame.font.Font("Fox Cavalier.otf",32)
+        jumpheight = int(gravity)-round(int(gravity)/2) 
         for i in range(0,ovamount):
-            widthtemp,heighttemp = imagesize.get('Overlays/'+folderoverlays[1:][mapselected]+'/'+str(overlays[i]))
+            widthtemp,heighttemp = imagesize.get('Overlays/'+mapselectedd+'/'+str(overlays[i]))
             lefttemp = overlaynames[i][0]
             toptemp = overlaynames[i][1]
             obstacle = pygame.Rect(int(lefttemp),int(toptemp),int(widthtemp),int(heighttemp))
@@ -277,6 +317,8 @@ class game():
         p1assets = p1assetstemp
         p2assets = p2assetstemp
         movable = {}
+        p1characterasset = [p1characterassets[0]]
+        p2characterasset = [p2characterassets[1]]
         while running:
             clock.tick(120)
             if pygame.display.get_active() == True:
@@ -301,19 +343,39 @@ class game():
                         mr = True
                         mt = True
                         mb = True
-                        if str(ob.collidepoint(hitbot)) == '1':
+                        if str(ob.collidepoint(hitbot[0],hitbot[1]+5)) == '1':
                             mb = False
-                        if str(ob.collidepoint(botleft)) == '1':
+                        if str(ob.collidepoint(botleft[0],botleft[1]+5)) == '1':
                             mb = False
-                        if str(ob.collidepoint(botright)) == '1':
+                        if str(ob.collidepoint(botright[0],botright[1]+5)) == '1':
                             mb = False
+                        if str(ob.collidepoint((botright[0]+1,botright[1]-5))) == '1':
+                            mr = False
+                        if str(ob.collidepoint((botleft[0]-3,botleft[1]-5))) == '1':
+                            ml = False
+                        if str(ob.collidepoint((topright[0]+5,topright[1]+5))) == '1':
+                            mr = False
+                        if str(ob.collidepoint((topleft[0]-3,topleft[1]+10))) == '1':
+                            ml = False
+                        if str(ob.collidepoint((topright[0]-5,topright[1]))) == '1':
+                            mt = False
+                        if str(ob.collidepoint((topleft[0]+5,topleft[1]))) == '1':
+                            mt = False
                         if str(ob.collidepoint(hittop)) == '1':
                             mt = False
                         if str(ob.collidepoint(hitright)) == '1':
                             mr = False
                         if str(ob.collidepoint(hitleft)) == '1':
                             ml = False
+                        if not mb and not ml and not mr:
+                            if hit == hitboxes[0]:
+                                loc = locations.get('p1')
+                                locations['p1'] = (int(loc[0]),(int(ob.topleft[1])-int(hit.height)))
+                            elif hit == hitboxes[1]:
+                                loc = locations.get('p2')
+                                locations['p2'] = (int(loc[0]),(int(ob.topleft[1])-int(hit.height)))
                         movable[str(hit)+str(ob)] = ml,mr,mt,mb
+                locations,previously = update.gravity(locations,gravity,hitboxes,movable,obstacles,previously,settings)
                 for event in pygame.event.get():
                     if event.type == pygame.QUIT:
                         running = False
@@ -321,12 +383,170 @@ class game():
                         pygame.quit()
                         sys.exit()
                     if event.type == pygame.KEYDOWN:
-                        print(pygame.key.name(event.key))
-                locations = update.gravity(locations,gravity,hitboxes,movable,obstacles)
-                update.update(locations,[p1assets,p2assets],win,[maps[mapselected],top],mouse,pos,top2,[overlays,overlaynames,ovamount,'Overlays/'+folderoverlays[1:][mapselected]])
-
-                
-                        
+                        if str(pygame.key.name(event.key)) == binds[0][3]:
+                            moveright1 = True
+                            for ob in obstacles:
+                                move = movable.get(str(hitboxes[0])+str(ob))
+                                if not move[1]:
+                                    moveright1 = False
+                    if event.type == KEYUP:
+                        if str(pygame.key.name(event.key)) == binds[0][3]:
+                            moveright1 = False
+                    if event.type == pygame.KEYDOWN:
+                        if str(pygame.key.name(event.key)) == binds[0][4]:
+                            if dir1 == 'left':
+                                attack1 = (pygame.image.load(str(p1m[0])+'/attack1left.png'),p1m[1][1],(locations.get('p1'),dir1)); attakk = attacks.get("p1"); attakk.append(attack1); attacks['p1'] = attakk 
+                            if dir1 == 'right':
+                                attack1 = (pygame.image.load(str(p1m[0])+'/attack1right.png'),p1m[1][1],(locations.get('p1'),dir1)); attakk = attacks.get("p1"); attakk.append(attack1); attacks['p1'] = attakk 
+                    if event.type == pygame.KEYDOWN:
+                        if str(pygame.key.name(event.key)) == binds[0][1]:
+                            moveleft1 = True
+                            for ob in obstacles:
+                                move = movable.get(str(hitboxes[0])+str(ob))
+                                if not move[0]:
+                                    moveleft1 = False
+                    if event.type == KEYUP:
+                        if str(pygame.key.name(event.key)) == binds[0][1]:
+                            moveleft1 = False
+                    if event.type == pygame.KEYDOWN:
+                        if str(pygame.key.name(event.key)) == binds[0][0] and delay not in range(1,(10*int(jumpheight))):
+                            for ob in obstacles:                                
+                                move = movable.get(str(hitboxes[0])+str(ob))
+                                if not move[3]:
+                                    jumping = True
+                    if event.type == KEYUP:
+                        if str(pygame.key.name(event.key)) == binds[0][0]:
+                            jumping = False
+                            delay = 10*int(jumpheight)
+                    if event.type == pygame.KEYDOWN:
+                        if str(pygame.key.name(event.key)) == binds[1][3]:
+                            moveright2 = True
+                            for ob in obstacles:
+                                move = movable.get(str(hitboxes[1])+str(ob))
+                                if not move[1]:
+                                    moveright2 = False
+                    if event.type == KEYUP:
+                        if str(pygame.key.name(event.key)) == binds[1][3]:
+                            moveright2 = False
+                    if event.type == pygame.KEYDOWN:
+                        if str(pygame.key.name(event.key)) == binds[1][1]:
+                            moveleft2 = True
+                            for ob in obstacles:
+                                move = movable.get(str(hitboxes[1])+str(ob))
+                                if not move[0]:
+                                    moveleft2 = False
+                    if event.type == KEYUP:
+                        if str(pygame.key.name(event.key)) == binds[1][1]:
+                            moveleft2 = False
+                    if event.type == pygame.KEYDOWN:
+                        if str(pygame.key.name(event.key)) == binds[1][0] and delay2 not in range(1,(10*int(jumpheight))):
+                            for ob in obstacles:                                
+                                move = movable.get(str(hitboxes[1])+str(ob))
+                                if not move[3]:
+                                    jumping2 = True
+                    if event.type == KEYUP:
+                        if str(pygame.key.name(event.key)) == binds[1][0]:
+                            jumping2 = False
+                            delay2 = 10*int(jumpheight)
+                p1characterasset=p1characterasset
+                p2characterasset=p2characterasset
+                if moveright1:
+                    moveright1 = True
+                    for ob in obstacles:
+                        move = movable.get(str(hitboxes[0])+str(ob))
+                        if not move[1]:
+                            moveright1 = False
+                    p2loc = locations.get('p2')
+                    location = locations.get('p1')
+                    newlocation = location[0]+p1mspeed
+                    locations = {}
+                    locations['p1'] = (newlocation,location[1])
+                    locations['p2'] = p2loc
+                    p1characterasset=[p1characterassets[0]]
+                    dir1 = right
+                if moveleft1:
+                    moveleft1 = True
+                    for ob in obstacles:
+                        move = movable.get(str(hitboxes[0])+str(ob))
+                        if not move[0]:
+                            moveleft1 = False
+                    p2loc = locations.get('p2')
+                    location = locations.get('p1')
+                    newlocation = location[0]-p1mspeed
+                    locations = {}
+                    locations['p1'] = (newlocation,location[1])
+                    locations['p2'] = p2loc
+                    p1characterasset=[p1characterassets[1]]
+                    dir1 = left
+                movablei = True
+                for ob in obstacles:
+                    move = movable.get(str(hitboxes[0])+str(ob))
+                    if not move[2]:
+                        movablei = False
+                if jumping or delay in range(1,(10*int(jumpheight))) and movablei == True:
+                    p2loc = locations.get('p2')
+                    location = locations.get('p1')
+                    newlocation = location[1]-(round(int(gravity)*2))
+                    locations = {}
+                    locations['p1'] = (location[0],newlocation)
+                    locations['p2'] = p2loc
+                    jumping = False
+                    delay = delay+1
+                else:
+                    jumping = False
+                if delay in range(1,(10*int(jumpheight))) and movablei == True:
+                    delay+=1
+                else:
+                    delay=0
+                if moveright2:
+                    moveright2 = True
+                    for ob in obstacles:
+                        move = movable.get(str(hitboxes[1])+str(ob))
+                        if not move[1]:
+                            moveright2 = False
+                    p1loc = locations.get('p1')
+                    location = locations.get('p2')
+                    newlocation = location[0]+p2mspeed
+                    locations = {}
+                    locations['p2'] = (newlocation,location[1])
+                    locations['p1'] = p1loc
+                    p2characterasset=[p2characterassets[0]]
+                    dir2 = right
+                if moveleft2:
+                    moveleft2 = True
+                    for ob in obstacles:
+                        move = movable.get(str(hitboxes[1])+str(ob))
+                        if not move[0]:
+                            moveleft2 = False
+                    p1loc = locations.get('p1')
+                    location = locations.get('p2')
+                    newlocation = location[0]-p2mspeed
+                    locations = {}
+                    locations['p2'] = (newlocation,location[1])
+                    locations['p1'] = p1loc
+                    p2characterasset=[p2characterassets[1]]
+                    dir2 = left
+                movablei = True
+                for ob in obstacles:
+                    move = movable.get(str(hitboxes[1])+str(ob))
+                    if not move[2]:
+                        movablei = False
+                if jumping2 or delay2 in range(1,(10*int(jumpheight))) and movablei:
+                    p1loc = locations.get('p1')
+                    location = locations.get('p2')
+                    newlocation = location[1]-(round(int(gravity)*2))
+                    locations = {}
+                    locations['p1'] = p1loc
+                    locations['p2'] = (location[0],newlocation)
+                    jumping2 = False
+                    delay2 = delay2+1
+                if delay2 in range(1,(10*int(jumpheight))):
+                    delay2+=1
+                else:
+                    delay2=0
+                update.update(locations,[p1characterasset,p2characterasset],win,[pygame.image.load('Maps/'+mapselectedd+'.png'),top],mouse,pos,top2,[overlays,overlaynames,ovamount,'Overlays/'+str(mapselectedd)],health,healthbars,[hp1,hp2],font,font2,[p1m[0],p2m[0]],settings)
+                update.elements(attacks,win)
+                    
                 
 
                     
@@ -337,53 +557,114 @@ class game():
 
 
 class update():
-    def gravity(locations,gravity,hitboxes,movable,obstacles):
-        newlocation = {}
-        valu = 0
-        for location in locations:
-            moohve = 0
-            val = locations.get(location)
-            y = val[1]
-            for obstacle in obstacles:
-                move = movable.get(str(hitboxes[valu])+str(obstacle))
-                if move[3]:
-                    moohve+=1
+    def gravity(locations,gravity,hitboxes,movable,obstacles,prev,settings):
+        newloc = {}
+        stay=[]
+        downmove = []
+        previously = {}
+        for hit in hitboxes:
+            moveabledirectionz = True
+            for ob in obstacles:
+                move = movable.get(str(hit)+str(ob))
+                if not move[3]:
+                    moveabledirectionz = False
+            if moveabledirectionz:
+                a = hitboxes.index(hit)+1
+                downmove.append('p'+str(a))
+            else:
+                a = hitboxes.index(hit)+1
+                stay.append('p'+str(a))
+        if len(stay) > 1:
+            if stay[0] == stay[1]:
+                stay = [str(stay[0]),'p'+str(int(stay[1][1])+1)]
+        if len(downmove) > 1:
+            if downmove[0] == downmove[1]:
+                stay = [str(downmove[0]),'p'+str(int(downmove[1][1])+1)]
+        for v in stay:
+            val2 = locations.get(str(v))
+            newloc[v] = (val2)
+            if settings[0]:
+                previously[v] = 1
+        for c in downmove:
+            valuu = locations.get(str(c))
+            if settings[0] and prev.get(str(c)) != None:
+                newloc[c] = (valuu[0],valuu[1]+int(gravity)+prev.get(c))
+                if int(prev.get(str(c))) < 10:
+                    previously[c] = prev.get(c)+1
                 else:
-                    newlocation[location] = val
-            if moohve == 2:
-                y+=int(gravity)
-                newlocation[location] = (val[0],y)
-            valu+=1
-        return newlocation
-    def update(locations,assets,win,elements,mouse,pos,top2,overlays):
+                    previously[c] = prev.get(c)
+            else:
+                newloc[c] = (valuu[0],valuu[1]+int(gravity))
+        return newloc,previously
+            
+                
+                
+    def update(locations,assets,win,elements,mouse,pos,top2,overlays,health,healthbars,maxhealth,font,font2,selected,settings):
         xy=[]
         for element in elements:
             win.blit(element,(0,0))
         if 6 < pos[0] < 64 and 6 < pos[1] < 28:
-            win.blit(top2,(0,0))
+            win.blit(top2,(0,0))    
             if mouse[0] == 1:
                 pygame.quit()   
                 sys.exit()
                 return False
                 time.sleep(0.1)
-        for location in locations:
-            val = locations.get(location)
-            xy.append(val)
-        for asset in assets[0]:
-            win.blit(asset,xy[0])
-        for assetz in assets[1]:
-            win.blit(assetz,xy[1])
+        val = locations.get('p1')
+        val2 = locations.get('p2')
+        win.blit(assets[0][0],val)
+        win.blit(assets[1][0],val2)
         listofoverlays = []
-        for c in overlays[0]:
+        for c in overlays[0]:   
             listofoverlays.append(pygame.image.load(overlays[3]+'/'+c))
         for i in range(0,int(overlays[2])):
             win.blit(listofoverlays[i],(int(overlays[1][i][0]),int(overlays[1][i][1])))
+        mapbox = pygame.Rect(0,-300,1280,720)
+        if not -500 < int(locations.get('p1')[1]) < 720:
+            health['p1'] = 0
+        elif not -500 < int(locations.get('p2')[1]) < 720:
+            health['p2'] = 0
+        healthperc = {'p1':health.get('p1')/maxhealth[0]*100,'p2':health.get('p2')/maxhealth[1]*100}
+        if len(str(healthperc.get('p2'))) == 2:
+            healthperc['p2'] = ' '+str(healthperc.get('p2'))
+        if len(str(healthperc.get('p2'))) == 1:
+            healthperc['p2'] = '  '+str(healthperc.get('p2'))
+        text = font.render(str(healthperc.get('p1'))+'%',True,(255,255,255))
+        text2 = font.render(str(healthperc.get('p1'))+'%',True,(114,137,218))
+        text3 = font2.render(selected[0],True,(255,255,255))
+        text4 = font2.render(selected[0],True,(114,137,218))
+        win.blit(text, (283,720-120))
+        win.blit(text2, (281,720-122))
+        win.blit(text3, (283,690-121))
+        win.blit(text4, (281,690-123))
+        text = font.render(str(healthperc.get('p2'))+'%',True,(255,255,255))
+        text2 = font.render(str(healthperc.get('p2'))+'%',True,(218,114,137))
+        text3 = font2.render(selected[1],True,(255,255,255))
+        text4 = font2.render(selected[1],True,(218,114,137))
+        win.blit(text, (765,720-120))   
+        win.blit(text2, (768,720-122))
+        win.blit(text3, (823,690-121))
+        win.blit(text4, (825,690-123))
+        
         pygame.display.update()
         
+        return health
+    def elements(attacks,win):
+        newattacks1 = []
+        for attack in attacks.get('p1'):
+            velocity = 0
+            if attack[2][1] == 'right':
+                velocity = int(attack[1][1][4][1])
+            else:
+                velocity = -int(attack[1][1][4][1])
+            win.blit(attack[0],attack[2][0])
+            val = (attack[0],attack[1],((int(attack[2][0][0])+velocity,attack[2][0][1]),attack[2][1]))
+            newattacks1.append(val)
+        attacks['p1'] = newattacks1
+        pygame.display.update()
 
 
-               
-                
+
         
 #init
 if __name__ == '__main__':
