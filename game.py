@@ -7,18 +7,16 @@ pygame.init()
 
 #CONTROL BINDING
 binds = []
-with open('Settings/controls.txt','r') as data:
+with open('Settings/controls.txt','r') as data: #open the 'binds' file
     csv_reader = csv.reader(data)
     for row in csv_reader:
         binds.append(row)
     data.close()
 defaultbinds = [
     ('w','a','s','d','1','2','3','4'),
-    ('up','left','down','right','o','p','[',']')
+    ('up','left','down','right','o','p','[',']') # just incase there is an error
                 ]
-print(binds)
 
-print(binds)
 #MAPS
 maplist = os.listdir('Maps')
 maps=[]
@@ -70,9 +68,9 @@ movesets = [('Bow Kid',
                )]),
            ('Paniemo',
              [('Blessing of the ocean',
-               [('Description', 'When an enemy is hit slows for 20% for 1 second'),
-                ('Boost', 'Debuff Slow'),
-                ('Amount', 20),
+               [('Description', 'When an enemy is hit heal for one health point.'),
+                ('Boost', 'Heal on hit'),
+                ('Amount', 1),
                 ('Stats', [
                     ('Health', 80),
                     ('Speed', 30)])
@@ -145,7 +143,7 @@ class frame():
                 return True
         elif 300 < v[0]  < 905 and 502 < v[1] < 530:
             if mouse[0] == 1:
-                game.game(0,1,1,win,items,particles,'newfunkcity')
+                game.game(0,0,1,win,items,particles,'newfunkcity')
                 return False
                 
             else:
@@ -240,7 +238,7 @@ class game():
         dir1 = right
         dir2 = left
         moveright1 = False
-        settings = [False] #first one is gravity acceleration
+        settings = [False,False] #first one is gravity acceleration
         attacks = {'p1': [],'p2': []}
         moveleft1 = False
         jump1 = 0
@@ -267,7 +265,7 @@ class game():
         gravity = 9
         p1listasset = os.listdir(p1m[0])
         p1characterassets = [pygame.image.load(p1m[0]+'/'+'front.png'),pygame.image.load(p1m[0]+'/'+'back.png')]
-        p2characterassets = [pygame.image.load(p2m[0]+'/'+'front.png'),pygame.image.load(p1m[0]+'/'+'front.png')]
+        p2characterassets = [pygame.image.load(p2m[0]+'/'+'front.png'),pygame.image.load(p1m[0]+'/'+'back.png')]
         folderoverlays = os.listdir('Overlays')
         overlays = os.listdir('Overlays/'+str(mapselectedd))
         itemzz  = overlays.index('.DS_Store')
@@ -288,7 +286,7 @@ class game():
             p2assets.append(value)
         frame.load([p1assets,p2assets],win,[overlays,overlaynames,ovamount,'Overlays/'+mapselectedd])
         running = True
-        locations = {'p1': (0,0) ,'p2': (850,300)}
+        locations = {'p1': (300,400) ,'p2': (850,300)}
         healthbars = {'p1': pygame.Rect(213,120,200,30),'p2': pygame.Rect(639,120,100,100)}
         p1assetstemp=[]
         p2assetstemp=[]
@@ -318,7 +316,7 @@ class game():
         p2assets = p2assetstemp
         movable = {}
         p1characterasset = [p1characterassets[0]]
-        p2characterasset = [p2characterassets[1]]
+        p2characterasset = [p2characterassets[0]]
         while running:
             clock.tick(120)
             if pygame.display.get_active() == True:
@@ -351,11 +349,11 @@ class game():
                             mb = False
                         if str(ob.collidepoint((botright[0]+1,botright[1]-5))) == '1':
                             mr = False
-                        if str(ob.collidepoint((botleft[0]-3,botleft[1]-5))) == '1':
+                        if str(ob.collidepoint((botleft[0]-5,botleft[1]-5))) == '1':
                             ml = False
                         if str(ob.collidepoint((topright[0]+5,topright[1]+5))) == '1':
                             mr = False
-                        if str(ob.collidepoint((topleft[0]-3,topleft[1]+10))) == '1':
+                        if str(ob.collidepoint((topleft[0]-5,topleft[1]+10))) == '1':
                             ml = False
                         if str(ob.collidepoint((topright[0]-5,topright[1]))) == '1':
                             mt = False
@@ -395,9 +393,35 @@ class game():
                     if event.type == pygame.KEYDOWN:
                         if str(pygame.key.name(event.key)) == binds[0][4]:
                             if dir1 == 'left':
-                                attack1 = (pygame.image.load(str(p1m[0])+'/attack1left.png'),p1m[1][1],(locations.get('p1'),dir1)); attakk = attacks.get("p1"); attakk.append(attack1); attacks['p1'] = attakk 
+                                img = pygame.image.load(str(p1m[0])+'/attack1left.png')
+                                attack1 = (img,p1m[1][1],(locations.get('p1'),dir1),img.get_rect()); attakk = attacks.get("p1"); attakk.append(attack1); attacks['p1'] = attakk 
                             if dir1 == 'right':
-                                attack1 = (pygame.image.load(str(p1m[0])+'/attack1right.png'),p1m[1][1],(locations.get('p1'),dir1)); attakk = attacks.get("p1"); attakk.append(attack1); attacks['p1'] = attakk 
+                                img = pygame.image.load(str(p1m[0])+'/attack1right.png')
+                                attack1 = (img,p1m[1][1],(locations.get('p1'),dir1),img.get_rect()); attakk = attacks.get("p1"); attakk.append(attack1); attacks['p1'] = attakk
+                    if event.type == pygame.KEYDOWN:
+                        if str(pygame.key.name(event.key)) == binds[0][5]:
+                            if dir1 == 'left':
+                                img = pygame.image.load(str(p1m[0])+'/attack2left.png')
+                                attack1 = (img,p1m[1][1],(locations.get('p1'),dir1),img.get_rect()); attakk = attacks.get("p1"); attakk.append(attack1); attacks['p1'] = attakk 
+                            if dir1 == 'right':
+                                img = pygame.image.load(str(p1m[0])+'/attack2right.png')
+                                attack1 = (img,p1m[1][1],(locations.get('p1'),dir1),img.get_rect()); attakk = attacks.get("p1"); attakk.append(attack1); attacks['p1'] = attakk
+                    if event.type == pygame.KEYDOWN:
+                        if str(pygame.key.name(event.key)) == binds[1][4]:
+                            if dir2 == 'left':
+                                img = pygame.image.load(str(p2m[0])+'/attack1left.png')
+                                attack1 = (img,p2m[1][1],(locations.get('p2'),dir2),img.get_rect()); attakk = attacks.get("p2"); attakk.append(attack1); attacks['p2'] = attakk 
+                            if dir2 == 'right':
+                                img = pygame.image.load(str(p2m[0])+'/attack1right.png')
+                                attack1 = (img,p2m[1][1],(locations.get('p2'),dir2),img.get_rect()); attakk = attacks.get("p2"); attakk.append(attack1); attacks['p2'] = attakk 
+                    if event.type == pygame.KEYDOWN:
+                        if str(pygame.key.name(event.key)) == binds[1][5]:
+                            if dir2 == 'left':
+                                img = pygame.image.load(str(p2m[0])+'/attack2left.png')
+                                attack1 = (img,p2m[1][1],(locations.get('p2'),dir2),img.get_rect()); attakk = attacks.get("p2"); attakk.append(attack1); attacks['p2'] = attakk 
+                            if dir2 == 'right':
+                                img = pygame.image.load(str(p2m[0])+'/attack2right.png')
+                                attack1 = (img,p2m[1][1],(locations.get('p2'),dir2),img.get_rect()); attakk = attacks.get("p2"); attakk.append(attack1); attacks['p2'] = attakk 
                     if event.type == pygame.KEYDOWN:
                         if str(pygame.key.name(event.key)) == binds[0][1]:
                             moveleft1 = True
@@ -540,12 +564,14 @@ class game():
                     locations['p2'] = (location[0],newlocation)
                     jumping2 = False
                     delay2 = delay2+1
-                if delay2 in range(1,(10*int(jumpheight))):
+                else:
+                    jumping = False
+                if delay2 in range(1,(10*int(jumpheight))) and movablei == True:
                     delay2+=1
                 else:
                     delay2=0
                 update.update(locations,[p1characterasset,p2characterasset],win,[pygame.image.load('Maps/'+mapselectedd+'.png'),top],mouse,pos,top2,[overlays,overlaynames,ovamount,'Overlays/'+str(mapselectedd)],health,healthbars,[hp1,hp2],font,font2,[p1m[0],p2m[0]],settings)
-                update.elements(attacks,win)
+                update.elements(attacks,win,obstacles)
                     
                 
 
@@ -589,7 +615,7 @@ class update():
             valuu = locations.get(str(c))
             if settings[0] and prev.get(str(c)) != None:
                 newloc[c] = (valuu[0],valuu[1]+int(gravity)+prev.get(c))
-                if int(prev.get(str(c))) < 10:
+                if int(prev.get(str(c))) < 30:
                     previously[c] = prev.get(c)+1
                 else:
                     previously[c] = prev.get(c)
@@ -600,6 +626,8 @@ class update():
                 
                 
     def update(locations,assets,win,elements,mouse,pos,top2,overlays,health,healthbars,maxhealth,font,font2,selected,settings):
+        if settings[1]:
+            print(mouse,pos)
         xy=[]
         for element in elements:
             win.blit(element,(0,0))
@@ -649,18 +677,36 @@ class update():
         pygame.display.update()
         
         return health
-    def elements(attacks,win):
+    def elements(attacks,win,obstacles):
         newattacks1 = []
+        newattacks2 = []
         for attack in attacks.get('p1'):
-            velocity = 0
-            if attack[2][1] == 'right':
-                velocity = int(attack[1][1][4][1])
-            else:
-                velocity = -int(attack[1][1][4][1])
-            win.blit(attack[0],attack[2][0])
-            val = (attack[0],attack[1],((int(attack[2][0][0])+velocity,attack[2][0][1]),attack[2][1]))
-            newattacks1.append(val)
-        attacks['p1'] = newattacks1
+            doable = True
+            for ob in obstacles:
+                if ob.collidepoint(attack[3].topleft) or ob.collidepoint(attack[3].topright) or ob.collidepoint(attack[3].midright) or ob.collidepoint(attack[3].midleft):
+                    doable = False
+            if doable:
+                if attack[2][1] == 'right':
+                    velocity = int(attack[1][1][4][1])
+                else:
+                    velocity = -int(attack[1][1][4][1])
+                win.blit(attack[0],attack[2][0])
+                val = (attack[0],attack[1],((int(attack[2][0][0])+velocity,attack[2][0][1]),attack[2][1]),pygame.Rect(attack[2][0],(attack[0].get_width(),attack[0].get_height())))
+                newattacks1.append(val)
+        for attack in attacks.get('p2'):
+            doable = True
+            for ob in obstacles:
+                if ob.collidepoint(attack[3].topleft) or ob.collidepoint(attack[3].topright) or ob.collidepoint(attack[3].midright) or ob.collidepoint(attack[3].midleft):
+                    doable = False
+            if doable:
+                if attack[2][1] == 'right':
+                    velocity = int(attack[1][1][4][1])
+                else:
+                    velocity = -int(attack[1][1][4][1])
+                win.blit(attack[0],attack[2][0])
+                val = (attack[0],attack[1],((int(attack[2][0][0])+velocity,attack[2][0][1]),attack[2][1]),pygame.Rect(attack[2][0],(attack[0].get_width(),attack[0].get_height())))
+                newattacks2.append(val)
+        attacks['p1'] = newattacks1; attacks['p2'] = newattacks2
         pygame.display.update()
 
 
