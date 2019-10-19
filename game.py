@@ -46,7 +46,7 @@ movesets = [('Bow Kid',
               ('Midge, Curve of Blessings',
                [
                 ('Description','Fire a bolt which stuns the enemy when hit'),
-                ('Damage','0'),
+                ('Damage','3'),
                 ('Cooldown','20'),
                 ('Effects','Stun'),
                 ('Velocity', '10')
@@ -402,10 +402,10 @@ class game():
                         if str(pygame.key.name(event.key)) == binds[0][5]:
                             if dir1 == 'left':
                                 img = pygame.image.load(str(p1m[0])+'/attack2left.png')
-                                attack1 = (img,p1m[1][1],(locations.get('p1'),dir1),img.get_rect()); attakk = attacks.get("p1"); attakk.append(attack1); attacks['p1'] = attakk 
+                                attack1 = (img,p1m[1][2],(locations.get('p1'),dir1),img.get_rect()); attakk = attacks.get("p1"); attakk.append(attack1); attacks['p1'] = attakk 
                             if dir1 == 'right':
                                 img = pygame.image.load(str(p1m[0])+'/attack2right.png')
-                                attack1 = (img,p1m[1][1],(locations.get('p1'),dir1),img.get_rect()); attakk = attacks.get("p1"); attakk.append(attack1); attacks['p1'] = attakk
+                                attack1 = (img,p1m[1][2],(locations.get('p1'),dir1),img.get_rect()); attakk = attacks.get("p1"); attakk.append(attack1); attacks['p1'] = attakk
                     if event.type == pygame.KEYDOWN:
                         if str(pygame.key.name(event.key)) == binds[1][4]:
                             if dir2 == 'left':
@@ -418,10 +418,10 @@ class game():
                         if str(pygame.key.name(event.key)) == binds[1][5]:
                             if dir2 == 'left':
                                 img = pygame.image.load(str(p2m[0])+'/attack2left.png')
-                                attack1 = (img,p2m[1][1],(locations.get('p2'),dir2),img.get_rect()); attakk = attacks.get("p2"); attakk.append(attack1); attacks['p2'] = attakk 
+                                attack1 = (img,p2m[1][2],(locations.get('p2'),dir2),img.get_rect()); attakk = attacks.get("p2"); attakk.append(attack1); attacks['p2'] = attakk 
                             if dir2 == 'right':
                                 img = pygame.image.load(str(p2m[0])+'/attack2right.png')
-                                attack1 = (img,p2m[1][1],(locations.get('p2'),dir2),img.get_rect()); attakk = attacks.get("p2"); attakk.append(attack1); attacks['p2'] = attakk 
+                                attack1 = (img,p2m[1][2],(locations.get('p2'),dir2),img.get_rect()); attakk = attacks.get("p2"); attakk.append(attack1); attacks['p2'] = attakk 
                     if event.type == pygame.KEYDOWN:
                         if str(pygame.key.name(event.key)) == binds[0][1]:
                             moveleft1 = True
@@ -571,7 +571,7 @@ class game():
                 else:
                     delay2=0
                 update.update(locations,[p1characterasset,p2characterasset],win,[pygame.image.load('Maps/'+mapselectedd+'.png'),top],mouse,pos,top2,[overlays,overlaynames,ovamount,'Overlays/'+str(mapselectedd)],health,healthbars,[hp1,hp2],font,font2,[p1m[0],p2m[0]],settings)
-                update.elements(attacks,win,obstacles)
+                health = update.elements(attacks,win,obstacles,hitboxes,health)
                     
                 
 
@@ -657,16 +657,16 @@ class update():
             healthperc['p2'] = ' '+str(healthperc.get('p2'))
         if len(str(healthperc.get('p2'))) == 1:
             healthperc['p2'] = '  '+str(healthperc.get('p2'))
-        text = font.render(str(healthperc.get('p1'))+'%',True,(255,255,255))
-        text2 = font.render(str(healthperc.get('p1'))+'%',True,(114,137,218))
+        text = font.render(str(round(healthperc.get('p1'),1))+'%',True,(255,255,255))
+        text2 = font.render(str(round(healthperc.get('p1'),1))+'%',True,(114,137,218))
         text3 = font2.render(selected[0],True,(255,255,255))
         text4 = font2.render(selected[0],True,(114,137,218))
         win.blit(text, (283,720-120))
         win.blit(text2, (281,720-122))
         win.blit(text3, (283,690-121))
         win.blit(text4, (281,690-123))
-        text = font.render(str(healthperc.get('p2'))+'%',True,(255,255,255))
-        text2 = font.render(str(healthperc.get('p2'))+'%',True,(218,114,137))
+        text = font.render(str(round(healthperc.get('p2'),1))+'%',True,(255,255,255))
+        text2 = font.render(str(round(healthperc.get('p2'),1))+'%',True,(218,114,137))
         text3 = font2.render(selected[1],True,(255,255,255))
         text4 = font2.render(selected[1],True,(218,114,137))
         win.blit(text, (765,720-120))   
@@ -677,14 +677,27 @@ class update():
         pygame.display.update()
         
         return health
-    def elements(attacks,win,obstacles):
+    def elements(attacks,win,obstacles,hitboxes,health):
         newattacks1 = []
-        newattacks2 = []
+        newhealth = {}
+        newattacks2 = []    
         for attack in attacks.get('p1'):
             doable = True
             for ob in obstacles:
-                if ob.collidepoint(attack[3].topleft) or ob.collidepoint(attack[3].topright) or ob.collidepoint(attack[3].midright) or ob.collidepoint(attack[3].midleft):
+                if ob.colliderect(attack[3]):
                     doable = False
+            if hitboxes[1].colliderect(attack[3]):
+                damage = int(attack[1][1][1][1])
+                doable = False
+                if newhealth.get('p2') == None:
+                    newhealth['p2'] = health.get('p2')-damage
+                else:
+                    newhealth['p2'] = newhealth.get('p2')-damage
+            else:
+                if newhealth.get('p2') == None:
+                    newhealth['p2'] = health.get('p2')
+                else:
+                    newhealth['p2'] = newhealth.get('p2')
             if doable:
                 if attack[2][1] == 'right':
                     velocity = int(attack[1][1][4][1])
@@ -696,8 +709,20 @@ class update():
         for attack in attacks.get('p2'):
             doable = True
             for ob in obstacles:
-                if ob.collidepoint(attack[3].topleft) or ob.collidepoint(attack[3].topright) or ob.collidepoint(attack[3].midright) or ob.collidepoint(attack[3].midleft):
+                if ob.colliderect(attack[3]):
                     doable = False
+            if hitboxes[0].colliderect(attack[3]):
+                damage = int(attack[1][1][1][1])
+                doable = False
+                if newhealth.get('p1') == None:
+                    newhealth['p1'] = health.get('p1')-damage
+                else:
+                    newhealth['p1'] = newhealth.get('p1')-damage
+            else:
+                if newhealth.get('p1') == None:
+                    newhealth['p1'] = health.get('p1')
+                else:
+                    newhealth['p1'] = newhealth.get('p1')
             if doable:
                 if attack[2][1] == 'right':
                     velocity = int(attack[1][1][4][1])
@@ -706,8 +731,13 @@ class update():
                 win.blit(attack[0],attack[2][0])
                 val = (attack[0],attack[1],((int(attack[2][0][0])+velocity,attack[2][0][1]),attack[2][1]),pygame.Rect(attack[2][0],(attack[0].get_width(),attack[0].get_height())))
                 newattacks2.append(val)
+        if newhealth.get('p1') == None:
+            newhealth['p1'] = health.get('p1')
+        if newhealth.get('p2') == None:
+            newhealth['p2'] = health.get('p2')
         attacks['p1'] = newattacks1; attacks['p2'] = newattacks2
         pygame.display.update()
+        return newhealth
 
 
 
