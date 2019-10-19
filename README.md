@@ -9,9 +9,7 @@ Augmented Ascension
 ======
 [![Github All Releases](https://img.shields.io/github/downloads/jean1398reborn/Augmented/total.svg)]()
 
-
 A symplistic rpg created using:
-
 
 [![badge](https://img.shields.io/static/v1?label=Module&message=Pygame&color=informational)](https://www.pygame.org/news)
 [![badge](https://img.shields.io/static/v1?label=Module&message=Random&color=informational)](https://docs.python.org/3/library/random.html)
