@@ -8,6 +8,7 @@
 Augmented Ascension
 ======
 [![Github All Releases](https://img.shields.io/github/downloads/jean1398reborn/Augmented/total.svg)]()
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/38bb51c80f964ab09609e5f1aad16c9d)](https://www.codacy.com/manual/jean1398reborn/Augmented?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=jean1398reborn/Augmented&amp;utm_campaign=Badge_Grade)
 
 
 A symplistic rpg created using:
