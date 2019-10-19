@@ -191,7 +191,6 @@ def main():
     pygame.display.set_icon(icon)
     pygame.display.set_caption('Augmented Ascension')
     win = pygame.display.set_mode((width,height), flags=pygame.NOFRAME)
-    notrunning = 'Talse'
     top2 = pygame.image.load('aatopbar.png') #load images
     ov = pygame.image.load('ov.png')
     pa = pygame.image.load('particle.png')
@@ -218,11 +217,11 @@ def main():
             if particles.get(particle)[0] > 1280:
                 a.append(particle)
             else:
-                particles[str(particle)] = (particles.get(particle)[0]+2,int(particles.get(particle)[1])) 
+                particles[str(particle)] = (particles.get(particle)[0]+2,int(particles.get(particle)[1]))
         if len(a) > 0:
             for v in a:
                 del particles[v]
-        a = []              
+        a = []
         if pygame.display.get_active() == True:
             for event in pygame.event.get():
                 pygame.event.poll()
@@ -245,13 +244,11 @@ def game(player1,player2,mapselected,win,items,particles,mapselectedd):
     settings = [False,False] #first one is gravity acceleration
     attacks = {'p1': [],'p2': []}
     moveleft1 = False
-    jump1 = 0
     jumping = False
     delay = 0
     previously = {'p1': 1, 'p2': 1}
     moveright2 = False
     moveleft2 = False
-    jump2 = 0
     jumping2 = False
     delay2 = 0
     p1m = movesets[player1]
@@ -269,7 +266,6 @@ def game(player1,player2,mapselected,win,items,particles,mapselectedd):
     p1listasset = os.listdir(p1m[0])
     p1characterassets = [pygame.image.load(p1m[0]+'/'+'front.png'),pygame.image.load(p1m[0]+'/'+'back.png')]
     p2characterassets = [pygame.image.load(p2m[0]+'/'+'front.png'),pygame.image.load(p1m[0]+'/'+'back.png')]
-    folderoverlays = os.listdir('Overlays')
     overlays = os.listdir('Overlays/'+str(mapselectedd))
     itemzz  = overlays.index('.DS_Store')
     del overlays[itemzz]
@@ -305,7 +301,7 @@ def game(player1,player2,mapselected,win,items,particles,mapselectedd):
     obstaclenames = []
     font = pygame.font.Font("Demonized.ttf",64)
     font2 = pygame.font.Font("Fox Cavalier.otf",32)
-    jumpheight = int(gravity)-round(int(gravity)/2) 
+    jumpheight = int(gravity)-round(int(gravity)/2)
     for i in range(0,ovamount):
         widthtemp,heighttemp = imagesize.get('Overlays/'+mapselectedd+'/'+str(overlays[i]))
         lefttemp = overlaynames[i][0]
@@ -323,7 +319,6 @@ def game(player1,player2,mapselected,win,items,particles,mapselectedd):
     p1characterasset = [p1characterassets[0]]
     p2characterasset = [p2characterassets[0]]
     cooldowns = {'p1':{'1':0,'2':0,'3':0,'4':0,},'p2':{'1':0,'2':0,'3':0,'4':0,}}
-    servertime = time.time()
     while running:
         clock.tick(120)
         if pygame.display.get_active() == True:
@@ -682,7 +677,6 @@ def gravitycalc(locations,gravity,hitboxes,movable,obstacles,prev,settings):
 def update(locations,assets,win,elements,mouse,pos,top2,overlays,health,healthbars,maxhealth,font,font2,selected,settings):
     if settings[1]:
         print(mouse,pos)
-    xy=[]
     for element in elements:
         win.blit(element,(0,0))
     if 6 < pos[0] < 64 and 6 < pos[1] < 28:
@@ -691,7 +685,6 @@ def update(locations,assets,win,elements,mouse,pos,top2,overlays,health,healthba
             pygame.quit()   
             sys.exit()
             return False
-            time.sleep(0.1)
     val = locations.get('p1')
     val2 = locations.get('p2')
     win.blit(assets[0][0],val)
@@ -701,7 +694,6 @@ def update(locations,assets,win,elements,mouse,pos,top2,overlays,health,healthba
         listofoverlays.append(pygame.image.load(overlays[3]+'/'+c))
     for i in range(0,int(overlays[2])):
         win.blit(listofoverlays[i],(int(overlays[1][i][0]),int(overlays[1][i][1])))
-    mapbox = pygame.Rect(0,-300,1280,720)
     if not -500 < int(locations.get('p1')[1]) < 720:
         health['p1'] = 0
     elif not -500 < int(locations.get('p2')[1]) < 720:
