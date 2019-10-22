@@ -3,12 +3,14 @@
 import pygame , sys, random, time, os, imagesize, ast, csv
 from pygame.locals import *
 pygame.init()
-settings = [False,False,False,False] #first one is gravity acceleration
 import platform
-
+settings = []
 system = platform.system()
-
-
+with open('Settings/settingsdata.txt','r') as data: #open the 'binds' file
+    csv_reader = csv.reader(data)
+    for row in csv_reader:
+        settings = row
+    data.close()
 #CONTROL BINDING
 binds = []
 with open('Settings/controls.txt','r') as data: #open the 'binds' file
@@ -47,9 +49,11 @@ movesets = [('Bow Kid',
               ("Death's Whisper",
                [('Description','Launch an arrow which deals ( 1 ) damage'),
                 ('Damage', '1'),
-                ('Cooldown', '3'),
+                ('Cooldown', '1'),
                 ('Effects', 'None'),
                     ('Velocity','20'),
+                ('Decay','10'),
+                ('Bleed','0','0')
                 ]
                  ),
               ('Midge, Curve of Blessings',
@@ -58,7 +62,9 @@ movesets = [('Bow Kid',
                 ('Damage','10'),
                 ('Cooldown','20'),
                 ('Effects','Stun'),
-                ('Velocity', '0')
+                ('Velocity', '0'),
+                ('Decay','20'),
+                ('Bleed','0','0')
                 ]
                   ),
               ('Flux, Skewer of Pride',
@@ -66,14 +72,19 @@ movesets = [('Bow Kid',
                 ('Damage','5'),
                 ('Cooldown','13'),
                 ('Effects','None'),
-                ('Velocity', '30')]
+                ('Velocity', '30'),
+                ('Decay','10'),
+                ('Bleed','0','0')]
+               
                   ),
               ('Enduring Fall of Harmonic Illusions',
                [('Description','Launch a super large balistic bolt dealing ( 40 ) damage and stunning the enemy'),
-                ('Damage','40'),
-                ('Cooldown','20'),
+                ('Damage','30'),
+                ('Cooldown','30'),
                 ('Effects','Stun'),
-                ('Velocity','100')]
+                ('Velocity','100'),
+                ('Decay','10'),
+                ('Bleed','1','5')]
                )]),
            ('Paniemo',
              [('Blessing of the ocean',
@@ -88,18 +99,22 @@ movesets = [('Bow Kid',
               ("Shifting Tides",
                [('Description','Create a mystical water bolt which deals ( 2 ) damage.'),
                 ('Damage', '1'),
-                ('Cooldown', '1'),
+                ('Cooldown', '0'),
                 ('Effects', 'None'),
-                    ('Velocity','30'),
+                ('Velocity','3'),
+                ('Decay','10'),
+                ('Bleed','0','0')
                 ]
                  ),
               ('Etheral Glacier',
                [
                 ('Description','Fire a magical etheral bolt which deals ( 2 ) damage to the enemy'),
                 ('Damage','2'),
-                ('Cooldown','6'),
+                ('Cooldown','1'),
                 ('Effects','None'),
-                ('Velocity', '10')
+                ('Velocity', '10'),
+                ('Decay','10'),
+                ('Bleed','1','5')
                 ]
                   ),
               ('Cryogenic Overflow',
@@ -107,14 +122,118 @@ movesets = [('Bow Kid',
                 ('Damage','6'),
                 ('Cooldown','13'),
                 ('Effects','None'),
-                ('Velocity', '10')]
+                ('Velocity', '10'),
+                ('Decay','10'),
+                ('Bleed','2','5')]
                   ),
               ('Skyshattering Overload',
-               [('Description','Shatter the sky and absorb the essence of wind and water itself dealing ( 20 ) damage and healing ( 20 ) health.'),
+               [('Description','Shatter the sky and absorb the essence of ice and water itself dealing ( 20 ) damage and healing ( 20 ) health.'),
                 ('Damage','20'),
                 ('Cooldown','40'),
                 ('Effects','SelfHeal'),
-                ('Velocity','20')]
+                ('Velocity','20'),
+                ('Decay','10'),
+                ('Bleed','0','0')]
+               )]),
+            ('Polaris',
+             [('Ranger',
+               [('Description', '+ 10% Extra movement speed'),
+                ('Boost', 'Movement'),
+                ('Amount', 10),
+                ('Stats', [
+                    ('Health', 140),
+                    ('Speed', 7)])
+                 ]  
+                 ),
+              ("Jab",
+               [('Description','Launch an arrow which deals ( 1 ) damage'),
+                ('Damage', '5'),
+                ('Cooldown', '4'),
+                ('Effects', 'None'),
+                    ('Velocity','1'),
+                ('Decay','1'),
+                ('Bleed','1','5')
+                ]
+                 ),
+              ('Sword Dance',
+               [
+                ('Description','Lay a mine down which deals ( 10 ) damage'),
+                ('Damage','10'),
+                ('Cooldown','8'),
+                ('Effects','Stun'),
+                ('Velocity', '1'),
+                ('Decay','1'),
+                ('Bleed','2','3')
+                ]
+                  ),
+              ('Kings Blade',
+               [('Description','Yeet an arrow at high velocity dealing ( 5 ) damage'),
+                ('Damage','20'),
+                ('Cooldown','13'),
+                ('Effects','None'),
+                ('Velocity', '2'),
+                ('Decay','1'),
+                ('Bleed','4','2')]
+               
+                  ),
+              ('Unlimited blade works',
+               [('Description','Launch a super large balistic bolt dealing ( 40 ) damage and stunning the enemy'),
+                ('Damage','60'),
+                ('Cooldown','40'),
+                ('Effects','Stun'),
+                ('Velocity','10'),
+                ('Decay','10'),
+                ('Bleed','5','2')]
+               )]),
+            ('Kabra',
+             [('Ranger',
+               [('Description', '+ 10% Extra movement speed'),
+                ('Boost', 'Movement'),
+                ('Amount', 10),
+                ('Stats', [
+                    ('Health', 70),
+                    ('Speed',10)])
+                 ]  
+                 ),
+              ("Abrar-47",
+               [('Description','Launch an arrow which deals ( 1 ) damage'),
+                ('Damage', '1'),
+                ('Cooldown', '0.3'),
+                ('Effects', 'None'),
+                    ('Velocity','40'),
+                ('Decay','10'),
+                ('Bleed','0','0')
+                ]
+                 ),
+              ('Kono Abrar da!',
+               [
+                ('Description','Lay a mine down which deals ( 10 ) damage'),
+                ('Damage','15'),
+                ('Cooldown','10'),
+                ('Effects','Stun'),
+                ('Velocity', '0'),
+                ('Decay','20'),
+                ('Bleed','0','0')
+                ]
+                  ),
+              ('Abromb',
+               [('Description','Yeet an arrow at high velocity dealing ( 5 ) damage'),
+                ('Damage','20'),
+                ('Cooldown','13'),
+                ('Effects','None'),
+                ('Velocity', '0'),
+                ('Decay','13'),
+                ('Bleed','1','5')]
+               
+                  ),
+              ('Abromic Brarmb',
+               [('Description','Launch a super large balistic bolt dealing ( 40 ) damage and stunning the enemy'),
+                ('Damage','80'),
+                ('Cooldown','60'),
+                ('Effects','Stun'),
+                ('Velocity','0'),
+                ('Decay','60'),
+                ('Bleed','2','10')]
                )])]
 
 
@@ -126,7 +245,7 @@ height= 720
 clock = pygame.time.Clock()
 started=0
 
-if settings[3]:
+if settings[3] == 'True':
     music = pygame.mixer.music.load('Creo - Reflections.mp3')
     pygame.mixer.music.play(-1)
     pygame.mixer.music.set_volume(0.6)
@@ -152,7 +271,7 @@ class frame(): #things related to changing the window such as updating and check
                 return True
         elif 300 < v[0]  < 905 and 502 < v[1] < 530:
             if mouse[0] == 1:
-                game(0,1,1,win,items,particles,'newfunkcity') # first and second value is the chacracter selected, third is the map selected (decapricated), the last value is the map selected.
+                selection(win,items,particles)  
                 return False
                 
             else:
@@ -174,7 +293,6 @@ class frame(): #things related to changing the window such as updating and check
     def load(elements,win,overlays): #loads everything into place
         p1=[]
         p2=[]
-        print(elements)
         del elements[1][2]
         for v in elements:
             p1 = elements[0]
@@ -279,7 +397,7 @@ def game(player1,player2,mapselected,win,items,particles,mapselectedd): #actual 
     gravity = 9
     p1listasset = os.listdir(p1m[0])
     p1characterassets = [pygame.image.load(p1m[0]+'/'+'front.png'),pygame.image.load(p1m[0]+'/'+'back.png')] 
-    p2characterassets = [pygame.image.load(p2m[0]+'/'+'front.png'),pygame.image.load(p1m[0]+'/'+'back.png')]
+    p2characterassets = [pygame.image.load(p2m[0]+'/'+'front.png'),pygame.image.load(p2m[0]+'/'+'back.png')]
     folderoverlays = os.listdir('Overlays')
     overlays = os.listdir('Overlays/'+str(mapselectedd))
     if str(system) == 'Darwin':
@@ -305,6 +423,7 @@ def game(player1,player2,mapselected,win,items,particles,mapselectedd): #actual 
         p2assets.append(value)
     frame.load([p1assets,p2assets],win,[overlays,overlaynames,ovamount,'Overlays/'+mapselectedd]) #loads the map and overlays to make a smoother experience
     running = True
+    bleed = {'p1': [], 'p2': []}
     locations = {'p1': (350,400) ,'p2': (850,300)}
     healthbars = {'p1': pygame.Rect(213,120,200,30),'p2': pygame.Rect(639,120,100,100)} #decapricated
     p1assetstemp=[]
@@ -335,7 +454,7 @@ def game(player1,player2,mapselected,win,items,particles,mapselectedd): #actual 
     p2assets = p2assetstemp
     movable = {}
     p1characterasset = [p1characterassets[0]]
-    p2characterasset = [p2characterassets[0]]
+    p2characterasset = [p2characterassets[1]]
     cooldowns = {'p1':{'1':0,'2':0,'3':0,'4':0,},'p2':{'1':0,'2':0,'3':0,'4':0,}} #cooldown system for attacks
     servertime = time.time()
     while running: #main loop
@@ -413,83 +532,83 @@ def game(player1,player2,mapselected,win,items,particles,mapselectedd): #actual 
                         moveright1 = False
                 if event.type == pygame.KEYDOWN:
                         if str(pygame.key.name(event.key)) == binds[0][4]:
-                            if time.time() - cooldowns.get('p1').get('1') > int(p1m[1][1][1][2][1]):
+                            if time.time() - float(cooldowns.get('p1').get('1')) > float(p1m[1][1][1][2][1]):
                                 if dir1 == 'left':
                                     img = pygame.image.load(str(p1m[0])+'/attack1left.png')
-                                    attack1 = (img,p1m[1][1],(locations.get('p1'),dir1),img.get_rect()); attakk = attacks.get("p1"); attakk.append(attack1); attacks['p1'] = attakk 
+                                    attack1 = (img,p1m[1][1],(locations.get('p1'),dir1),img.get_rect(),time.time()); attakk = attacks.get("p1"); attakk.append(attack1); attacks['p1'] = attakk 
                                 if dir1 == 'right':
                                     img = pygame.image.load(str(p1m[0])+'/attack1right.png')
-                                    attack1 = (img,p1m[1][1],(locations.get('p1'),dir1),img.get_rect()); attakk = attacks.get("p1"); attakk.append(attack1); attacks['p1'] = attakk
+                                    attack1 = (img,p1m[1][1],(locations.get('p1'),dir1),img.get_rect(),time.time()); attakk = attacks.get("p1"); attakk.append(attack1); attacks['p1'] = attakk
                                 cooldowns['p1']['1'] = time.time()
                 if event.type == pygame.KEYDOWN:
                     if str(pygame.key.name(event.key)) == binds[0][5]:
-                        if time.time() - cooldowns.get('p1').get('2') > int(p1m[1][2][1][2][1]):
+                        if time.time() - float(cooldowns.get('p1').get('2')) > float(p1m[1][2][1][2][1]):
                             if dir1 == 'left':
                                 img = pygame.image.load(str(p1m[0])+'/attack2left.png')
-                                attack1 = (img,p1m[1][2],(locations.get('p1'),dir1),img.get_rect()); attakk = attacks.get("p1"); attakk.append(attack1); attacks['p1'] = attakk 
+                                attack1 = (img,p1m[1][2],(locations.get('p1'),dir1),img.get_rect(),time.time()); attakk = attacks.get("p1"); attakk.append(attack1); attacks['p1'] = attakk 
                             if dir1 == 'right':
                                 img = pygame.image.load(str(p1m[0])+'/attack2right.png')
-                                attack1 = (img,p1m[1][2],(locations.get('p1'),dir1),img.get_rect()); attakk = attacks.get("p1"); attakk.append(attack1); attacks['p1'] = attakk
+                                attack1 = (img,p1m[1][2],(locations.get('p1'),dir1),img.get_rect(),time.time()); attakk = attacks.get("p1"); attakk.append(attack1); attacks['p1'] = attakk
                             cooldowns['p1']['2'] = time.time()
                 if event.type == pygame.KEYDOWN:
                     if str(pygame.key.name(event.key)) == binds[0][6]:
-                        if time.time() - cooldowns.get('p1').get('3') > int(p1m[1][3][1][2][1]):
+                        if time.time() - float(cooldowns.get('p1').get('3')) > float(p1m[1][3][1][2][1]):
                             if dir1 == 'left':
                                 img = pygame.image.load(str(p1m[0])+'/attack3left.png')
-                                attack1 = (img,p1m[1][3],(locations.get('p1'),dir1),img.get_rect()); attakk = attacks.get("p1"); attakk.append(attack1); attacks['p1'] = attakk 
+                                attack1 = (img,p1m[1][3],(locations.get('p1'),dir1),img.get_rect(),time.time()); attakk = attacks.get("p1"); attakk.append(attack1); attacks['p1'] = attakk 
                             if dir1 == 'right':
                                 img = pygame.image.load(str(p1m[0])+'/attack3right.png')
-                                attack1 = (img,p1m[1][3],(locations.get('p1'),dir1),img.get_rect()); attakk = attacks.get("p1"); attakk.append(attack1); attacks['p1'] = attakk
+                                attack1 = (img,p1m[1][3],(locations.get('p1'),dir1),img.get_rect(),time.time()); attakk = attacks.get("p1"); attakk.append(attack1); attacks['p1'] = attakk
                             cooldowns['p1']['3'] = time.time()
                 if event.type == pygame.KEYDOWN:
                     if str(pygame.key.name(event.key)) == binds[0][7]:
-                        if time.time() - cooldowns.get('p1').get('4') > int(p1m[1][4][1][2][1]):
+                        if time.time() - float(cooldowns.get('p1').get('4')) > float(p1m[1][4][1][2][1]):
                             if dir1 == 'left':
                                 img = pygame.image.load(str(p1m[0])+'/ultimateleft.png')
-                                attack1 = (img,p1m[1][4],(locations.get('p1'),dir1),img.get_rect()); attakk = attacks.get("p1"); attakk.append(attack1); attacks['p1'] = attakk 
+                                attack1 = (img,p1m[1][4],(locations.get('p1'),dir1),img.get_rect(),time.time()); attakk = attacks.get("p1"); attakk.append(attack1); attacks['p1'] = attakk 
                             if dir1 == 'right':
                                 img = pygame.image.load(str(p1m[0])+'/ultimateright.png')
-                                attack1 = (img,p1m[1][4],(locations.get('p1'),dir1),img.get_rect()); attakk = attacks.get("p1"); attakk.append(attack1); attacks['p1'] = attakk
+                                attack1 = (img,p1m[1][4],(locations.get('p1'),dir1),img.get_rect(),time.time()); attakk = attacks.get("p1"); attakk.append(attack1); attacks['p1'] = attakk
                             cooldowns['p1']['4'] = time.time()
                 if event.type == pygame.KEYDOWN:
                     if str(pygame.key.name(event.key)) == binds[1][4]:
-                        if time.time() - cooldowns.get('p2').get('1') > int(p2m[1][1][1][2][1]):
+                        if time.time() - float(cooldowns.get('p2').get('1')) > float(p2m[1][1][1][2][1]):
                             if dir2 == 'left':
                                 img = pygame.image.load(str(p2m[0])+'/attack1left.png')
-                                attack1 = (img,p2m[1][1],(locations.get('p2'),dir2),img.get_rect()); attakk = attacks.get("p2"); attakk.append(attack1); attacks['p2'] = attakk 
+                                attack1 = (img,p2m[1][1],(locations.get('p2'),dir2),img.get_rect(),time.time()); attakk = attacks.get("p2"); attakk.append(attack1); attacks['p2'] = attakk 
                             if dir2 == 'right':
                                 img = pygame.image.load(str(p2m[0])+'/attack1right.png')
-                                attack1 = (img,p2m[1][1],(locations.get('p2'),dir2),img.get_rect()); attakk = attacks.get("p2"); attakk.append(attack1); attacks['p2'] = attakk
+                                attack1 = (img,p2m[1][1],(locations.get('p2'),dir2),img.get_rect(),time.time()); attakk = attacks.get("p2"); attakk.append(attack1); attacks['p2'] = attakk
                             cooldowns['p2']['1'] = time.time()
                 if event.type == pygame.KEYDOWN:
                     if str(pygame.key.name(event.key)) == binds[1][5]:
-                        if time.time() - cooldowns.get('p2').get('2') > int(p2m[1][2][1][2][1]):
+                        if time.time() - float(cooldowns.get('p2').get('2')) > float(p2m[1][2][1][2][1]):
                             if dir2 == 'left':
                                 img = pygame.image.load(str(p2m[0])+'/attack2left.png')
-                                attack1 = (img,p2m[1][2],(locations.get('p2'),dir2),img.get_rect()); attakk = attacks.get("p2"); attakk.append(attack1); attacks['p2'] = attakk 
+                                attack1 = (img,p2m[1][2],(locations.get('p2'),dir2),img.get_rect(),time.time()); attakk = attacks.get("p2"); attakk.append(attack1); attacks['p2'] = attakk 
                             if dir2 == 'right':
                                 img = pygame.image.load(str(p2m[0])+'/attack2right.png')
-                                attack1 = (img,p2m[1][2],(locations.get('p2'),dir2),img.get_rect()); attakk = attacks.get("p2"); attakk.append(attack1); attacks['p2'] = attakk
+                                attack1 = (img,p2m[1][2],(locations.get('p2'),dir2),img.get_rect(),time.time()); attakk = attacks.get("p2"); attakk.append(attack1); attacks['p2'] = attakk
                             cooldowns['p2']['2'] = time.time()
                 if event.type == pygame.KEYDOWN:
                     if str(pygame.key.name(event.key)) == binds[1][6]:
-                        if time.time() - cooldowns.get('p2').get('3') > int(p2m[1][3][1][2][1]):
+                        if time.time() - float(cooldowns.get('p2').get('3')) > float(p2m[1][3][1][2][1]):
                             if dir2 == 'left':
                                 img = pygame.image.load(str(p2m[0])+'/attack3left.png')
-                                attack1 = (img,p2m[1][3],(locations.get('p2'),dir2),img.get_rect()); attakk = attacks.get("p2"); attakk.append(attack1); attacks['p2'] = attakk 
+                                attack1 = (img,p2m[1][3],(locations.get('p2'),dir2),img.get_rect(),time.time()); attakk = attacks.get("p2"); attakk.append(attack1); attacks['p2'] = attakk 
                             if dir2 == 'right':
                                 img = pygame.image.load(str(p2m[0])+'/attack3right.png')
-                                attack1 = (img,p2m[1][3],(locations.get('p2'),dir2),img.get_rect()); attakk = attacks.get("p2"); attakk.append(attack1); attacks['p2'] = attakk
+                                attack1 = (img,p2m[1][3],(locations.get('p2'),dir2),img.get_rect(),time.time()); attakk = attacks.get("p2"); attakk.append(attack1); attacks['p2'] = attakk
                             cooldowns['p2']['3'] = time.time()
                 if event.type == pygame.KEYDOWN:
                     if str(pygame.key.name(event.key)) == binds[1][7]:
-                        if time.time() - cooldowns.get('p2').get('4') > int(p2m[1][4][1][2][1]):
+                        if time.time() - float(cooldowns.get('p2').get('4')) > float(p2m[1][4][1][2][1]):
                             if dir2 == 'left':
                                 img = pygame.image.load(str(p2m[0])+'/ultimateleft.png')
-                                attack1 = (img,p2m[1][4],(locations.get('p2'),dir2),img.get_rect()); attakk = attacks.get("p2"); attakk.append(attack1); attacks['p2'] = attakk 
+                                attack1 = (img,p2m[1][4],(locations.get('p2'),dir2),img.get_rect(),time.time()); attakk = attacks.get("p2"); attakk.append(attack1); attacks['p2'] = attakk 
                             if dir2 == 'right':
                                 img = pygame.image.load(str(p2m[0])+'/ultimateright.png')
-                                attack1 = (img,p2m[1][4],(locations.get('p2'),dir2),img.get_rect()); attakk = attacks.get("p2"); attakk.append(attack1); attacks['p2'] = attakk
+                                attack1 = (img,p2m[1][4],(locations.get('p2'),dir2),img.get_rect(),time.time()); attakk = attacks.get("p2"); attakk.append(attack1); attacks['p2'] = attakk
                             cooldowns['p2']['4'] = time.time()
                 if event.type == pygame.KEYDOWN:
                     if str(pygame.key.name(event.key)) == binds[0][1]:
@@ -639,10 +758,10 @@ def game(player1,player2,mapselected,win,items,particles,mapselectedd): #actual 
                 delay2+=1
             else:
                 delay2=0
-            if settings[2]:
+            if settings[2] == 'True':
                 cooldowns = {'p1':{'1':0,'2':0,'3':0,'4':0,},'p2':{'1':0,'2':0,'3':0,'4':0,}}
             update(locations,[p1characterasset,p2characterasset],win,[pygame.image.load('Maps/'+mapselectedd+'.png'),top],mouse,pos,top2,[overlays,overlaynames,ovamount,'Overlays/'+str(mapselectedd)],health,healthbars,[hp1,hp2],font,font2,[p1m[0],p2m[0]],settings)
-            locations,health,victory = elements(attacks,win,obstacles,hitboxes,health,locations,[player1,player2,mapselected,win,items,particles,mapselectedd])
+            locations,health,victory,bleed = elements(bleed,attacks,win,obstacles,hitboxes,health,locations,[player1,player2,mapselected,win,items,particles,mapselectedd])
             if victory:
                 victory = 'second'
                 locations['p1'] = (10000,10000)
@@ -700,11 +819,11 @@ def gravitycalc(locations,gravity,hitboxes,movable,obstacles,prev,settings):
     for v in stay:
         val2 = locations.get(str(v))
         newloc[v] = (val2)
-        if settings[0]:
+        if settings[0] == 'True':
             previously[v] = 1
     for c in downmove:
         valuu = locations.get(str(c))
-        if settings[0] and prev.get(str(c)) != None:
+        if settings[0] == 'True' and prev.get(str(c)) != None:
             newloc[c] = (valuu[0],valuu[1]+int(gravity)+prev.get(c))
             if int(prev.get(str(c))) < 30:
                 previously[c] = prev.get(c)+1
@@ -717,7 +836,7 @@ def gravitycalc(locations,gravity,hitboxes,movable,obstacles,prev,settings):
             
             
 def update(locations,assets,win,elements,mouse,pos,top2,overlays,health,healthbars,maxhealth,font,font2,selected,settings):
-    if settings[1]:
+    if settings[1]=='True':
         print(mouse,pos)
     xy=[]
     for element in elements:
@@ -775,11 +894,12 @@ def update(locations,assets,win,elements,mouse,pos,top2,overlays,health,healthba
     pygame.display.update()
     
     return health
-def elements(attacks,win,obstacles,hitboxes,health,locations,originalarguments):
+def elements(bleed,attacks,win,obstacles,hitboxes,health,locations,originalarguments):
     restart = False
     newattacks1 = []
     newhealth = {}
-    newattacks2 = []    
+    newattacks2 = []
+    newbleed = {'p1':[],'p2':[]}
     for attack in attacks.get('p1'):
         doable = True
         for ob in obstacles:
@@ -790,8 +910,10 @@ def elements(attacks,win,obstacles,hitboxes,health,locations,originalarguments):
             doable = False
             if newhealth.get('p2') == None:
                 newhealth['p2'] = health.get('p2')-damage
+                newbleed.get('p2').append((attack[1][1][6],time.time()))
             else:
                 newhealth['p2'] = newhealth.get('p2')-damage
+                newbleed.get('p2').append((attack[1][1][6],time.time()))
         else:
             if newhealth.get('p2') == None:
                 newhealth['p2'] = health.get('p2')
@@ -799,12 +921,13 @@ def elements(attacks,win,obstacles,hitboxes,health,locations,originalarguments):
                 newhealth['p2'] = newhealth.get('p2')
         if doable:
             if attack[2][1] == 'right':
-                velocity = int(attack[1][1][4][1])
+                velocity = float(attack[1][1][4][1])
             else:
-                velocity = -int(attack[1][1][4][1])
+                velocity = -float(attack[1][1][4][1])
             win.blit(attack[0],attack[2][0])
-            val = (attack[0],attack[1],((int(attack[2][0][0])+velocity,attack[2][0][1]),attack[2][1]),pygame.Rect(attack[2][0],(attack[0].get_width(),attack[0].get_height())))
-            newattacks1.append(val)
+            val = (attack[0],attack[1],((int(attack[2][0][0])+velocity,attack[2][0][1]),attack[2][1]),pygame.Rect(attack[2][0],(attack[0].get_width(),attack[0].get_height())),attack[4])
+            if not time.time() - attack[4] > int(attack[1][1][5][1]):
+                newattacks1.append(val)
     for attack in attacks.get('p2'):
         doable = True
         for ob in obstacles:
@@ -815,8 +938,10 @@ def elements(attacks,win,obstacles,hitboxes,health,locations,originalarguments):
             doable = False
             if newhealth.get('p1') == None:
                 newhealth['p1'] = health.get('p1')-damage
+                newbleed.get('p1').append((attack[1][1][6],time.time()))
             else:
                 newhealth['p1'] = newhealth.get('p1')-damage
+                newbleed.get('p1').append((attack[1][1][6],time.time()))
         else:
             if newhealth.get('p1') == None:
                 newhealth['p1'] = health.get('p1')
@@ -824,12 +949,39 @@ def elements(attacks,win,obstacles,hitboxes,health,locations,originalarguments):
                 newhealth['p1'] = newhealth.get('p1')
         if doable:
             if attack[2][1] == 'right':
-                velocity = int(attack[1][1][4][1])
+                velocity = float(attack[1][1][4][1])
             else:
-                velocity = -int(attack[1][1][4][1])
+                velocity = -float(attack[1][1][4][1])
             win.blit(attack[0],attack[2][0])
-            val = (attack[0],attack[1],((int(attack[2][0][0])+velocity,attack[2][0][1]),attack[2][1]),pygame.Rect(attack[2][0],(attack[0].get_width(),attack[0].get_height())))
-            newattacks2.append(val)
+            val = (attack[0],attack[1],((int(attack[2][0][0])+velocity,attack[2][0][1]),attack[2][1]),pygame.Rect(attack[2][0],(attack[0].get_width(),attack[0].get_height())),attack[4])
+            if not time.time() - attack[4] > int(attack[1][1][5][1]):
+                newattacks2.append(val)
+    for bled in bleed.get('p2'):
+        if int(bled[0][2]) > 0:
+            if time.time() - bled[1] >= float(1):
+                bled = ((bled[0][0],bled[0][1],str((int(bled[0][2])-1))),time.time())
+                newbleed.get('p2').append(bled)
+                if newhealth.get('p2') != None:
+                    newhealth['p2'] = round(newhealth.get('p2'),1)-float(bled[0][1])
+                else:
+                    newhealth['p2'] = round(health.get('p2'),1)-float(bled[0][1])
+            else:
+                newbleed.get('p2').append(bled)
+    for bled in bleed.get('p1'):
+        if int(bled[0][2]) > 0:
+            if time.time() - bled[1] >= float(1):
+                bled = ((bled[0][0],bled[0][1],str((int(bled[0][2])-1))),time.time())
+                newbleed.get('p1').append(bled)
+                if newhealth.get('p1') != None:
+                    newhealth['p1'] = round(newhealth.get('p1'),1)-float(bled[0][1])
+                else:
+                    newhealth['p1'] = round(health.get('p1'),1)-float(bled[0][1])
+            else:
+                newbleed.get('p1').append(bled)
+    if newbleed.get('p1') == None:
+        newbleed['p1'] = []
+    if newbleed.get('p2') == None:
+        newbleed['p2'] = []
     if newhealth.get('p1') == None:
         newhealth['p1'] = health.get('p1')
     if newhealth.get('p2') == None:
@@ -856,38 +1008,101 @@ def elements(attacks,win,obstacles,hitboxes,health,locations,originalarguments):
         playerscore['p2']=playerscore.get('p2')+1
     attacks['p1'] = newattacks1; attacks['p2'] = newattacks2
     pygame.display.update()
-    return locations,newhealth,restart
+    return locations,newhealth,restart,newbleed
 
 def settingzs(win):
     top = pygame.image.load('aatopbar2.png') #top bar
     top2 = pygame.image.load('aatopbar.png')
     settingsbuttons = pygame.image.load('settingsbuttons.png')
     instructions = pygame.image.load('instructionpage.png')
+    rebindtemplate = pygame.image.load('rebindtemplate.png')
+    ss = pygame.image.load('secretsettingstemplate.png')
+    settingnames = ['Gravity Acceleration (Broken): ','Print Location of mouse: ','No Cooldowns: ','Music: ']
     page = 1
     save = True
     running = True
+    keydown = []
     while running:
+        isdown = 0
+        keydown = []
         clock.tick(27)
         if pygame.display.get_active() == True: #makes the actual program quit and not just the window (stops hanging)
             for event in pygame.event.get():
+                if event.type == pygame.KEYDOWN:
+                    keydown = [str(pygame.key.name(event.key))]
+                elif event.type == pygame.MOUSEBUTTONDOWN:
+                    isdown = 1
                 pygame.event.poll()
                 if event.type == pygame.QUIT:
                     running = False
                     pygame.display.update()
                     pygame.quit()
                     sys.exit()
-                    if save == True:
-                        with open('Settings/controls.txt','w') as deta:
-                            writer = csv.writer(deta)
-                            writer.writerow(binds[0])
-                            writer.writerow(binds[1])
-        mouse = pygame.mouse.get_pressed()
+        mouse = (isdown,0,0)
+        mouse2 = pygame.mouse.get_pressed()
         pos = pygame.mouse.get_pos()
-        print(mouse,pos)
-        if page == 1:
+        if page == 1:   
             win.blit(settingsbuttons,(0,0))
         if page == 2:
             win.blit(instructions,(0,0))
+        if page == 4:
+            with open('Settings/settingsdata.txt','w') as deta:
+                writer = csv.writer(deta)
+                writer.writerow(settings)
+            win.blit(ss,(0,0))
+            font = pygame.font.Font("Fox Cavalier.otf",44)
+            v=0
+            buttons = []
+            for setting in settings:
+                text1 = font.render(str(settingnames[v])+str(setting),True,(255,255,255))
+                text2 = font.render(str(settingnames[v])+str(setting),True,(143, 114, 218))
+                val = win.blit(text1,(115,153+90*v))
+                win.blit(text2,(113,150+90*v))
+                val = (val,settingnames[v])
+                buttons.append(val)
+                v+=1
+            for button in buttons:
+                if button[0].collidepoint(pos):
+                    if mouse[0] == 1:
+                        index = settingnames.index(button[1])
+                        if settings[index] == 'True':
+                            settings[index] = 'False'
+                            break
+                        else:
+                            settings[index] = 'True'
+                            break
+                        
+        if page == 3:
+            win.blit(rebindtemplate,(0,0))
+            locations = {'p1': [], 'p2': []}
+            font = pygame.font.Font("Fox Cavalier.otf",64)
+            font = pygame.font.Font("Fox Cavalier.otf",34)
+            i=0
+            for bind in binds[0]:
+                text1 = font.render(str(bind),True,(255,255,255))
+                text2 = font.render(str(bind),True,(114,137,218))
+                val = win.blit(text1,(115,153+60*i))
+                win.blit(text2,(113,150+60*i))
+                locations.get('p1').append(val)
+                i+=1
+            i=0
+            for bind in binds[1]:
+                text1 = font.render(str(bind),True,(255,255,255))
+                text2 = font.render(str(bind),True,(218,114,13))
+                val = win.blit(text1,(1068,153+60*i))
+                win.blit(text2,(1066,150+60*i))
+                locations.get('p2').append(val)
+                i+=1
+            for location in locations.get('p1'):
+                if location.collidepoint(pos):
+                    if mouse2[0] == 1:
+                        if len(keydown) > 0 :
+                            binds[0][locations.get('p1').index(location)] = keydown[0]
+            for location in locations.get('p2'):
+                if location.collidepoint(pos):
+                    if mouse2[0] == 1:
+                        if len(keydown) > 0 :
+                            binds[1][locations.get('p2').index(location)] = keydown[0]
         if 6 < pos[0] < 64 and 6 < pos[1] < 28:
             win.blit(top2,(0,0))    
             if mouse[0] == 1:
@@ -904,17 +1119,120 @@ def settingzs(win):
                 if page == 2:
                     page = 1
                     break
-                    
-        if 354 < pos[0] < 585 and 239 < pos[1] < 471:
-            if mouse[0] == 1:
-                page = 2
-    if save == True:
-        with open('Settings/controls.txt','w') as deta:
-            writer = csv.writer(deta)
-            writer.writerow(binds[0])
-            writer.writerow(binds[1])
+                if page == 3:
+                    with open('Settings/controls.txt','w') as deta:
+                        writer = csv.writer(deta)
+                        writer.writerow(binds[0])
+                        writer.writerow(binds[1])
+                    page = 1
+                    break
+                if page == 4:
+                    page = 1
+                    break
+        if page == 1:       
+            if 354 < pos[0] < 585 and 239 < pos[1] < 471:
+                if mouse[0] == 1:
+                    page = 2
+        if page == 1:
+            if 684 < pos[0] < 917 and 245 < pos[1] < 474:
+                if mouse[0] == 1:
+                    page = 3
+        if page == 1:
+            if 463 < pos[0] < 838 and 543 < pos[1] < 656:
+                if mouse[0] == 1:
+                    page = 4
     settingzs(win)
+def selection(win,items,particles):
+    top = pygame.image.load('aatopbar2.png') #top bar
+    top2 = pygame.image.load('aatopbar.png')
+    mapselect = pygame.image.load('sellecc map.png')
+    bg = pygame.image.load('bg1.png')
+    mapszd = []
+    selectime = 1
+    selected = {}
+    isdown = 0
+    firstime = False
+    running = True
+    font = pygame.font.Font("Fox Cavalier.otf",44)
+    for mapz in maps:
+        mapszd.append(mapz)
+    while running:
+        clock.tick(27)
+        isdown = 0
+        if pygame.display.get_active() == True: #makes the actual program quit and not just the window (stops hanging)
+            for event in pygame.event.get():
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    isdown = 1
+                pygame.event.poll()
+                if event.type == pygame.QUIT:
+                    running = False
+                    pygame.display.update()
+                    pygame.quit()
+                    sys.exit()
+                    
+        win.blit(bg,(0,0))
+        pygame.display.update()
+        i=0
+        mouse = (isdown,0,0)
+        pos = pygame.mouse.get_pos()
+        if 6 < pos[0] < 64 and 6 < pos[1] < 28:
+            win.blit(top2,(0,0))    
+            if mouse[0] == 1:
+                pygame.quit()   
+                sys.exit()
+                return False
+        else:
+            win.blit(top,(0,0))
+        vals = []
+        if selectime == 1:
+            for paragon in movesets:
+                text1 = font.render(str(paragon[0]),True,(255,255,255))
+                text2 = font.render(str(paragon[0]),True,(114,137,218))
+                val = win.blit(text1,(115,153+60*i))
+                win.blit(text2,(113,150+60*i))
+                pygame.display.update()
+                vals.append(val)
+                i+=1
+        if selectime == 2:
+            for paragon in movesets:
+                text1 = font.render(str(paragon[0]),True,(255,255,255))
+                text2 = font.render(str(paragon[0]),True,(218,114,137))
+                val = win.blit(text1,(115,153+60*i))
+                win.blit(text2,(113,150+60*i))
+                pygame.display.update()
+                vals.append(val)
+                i+=1
+        if selectime == 1:
+            for val in vals:
+                if val.collidepoint(pos):
+                    win.blit(pygame.image.load(str(movesets[vals.index(val)][0])+'/selectside.png'),(1280-409,0))
+                    pygame.display.update()
+                    if mouse[0] == 1:
+                        selected['p1'] = vals.index(val)
+                        selectime += 1
+                        mouse = (0,0,0)
+        if selectime == 2:
+            for val in vals:
+                if val.collidepoint(pos):
+                    win.blit(pygame.image.load(str(movesets[vals.index(val)][0])+'/selectside.png'),(1280-409,0))
+                    pygame.display.update()
+                    if mouse[0] == 1:
+                        if firstime == True:
+                            firstime = False
+                            pass
+                        else:
+                            selected['p2'] = vals.index(val)
+                            running = False
+            
+                            
+                            
+                        
+                            
+                            
+        pygame.display.update()
+    game(selected.get('p1'),selected.get('p2'),1,win,items,particles,'newfunkcity')
 
+            
 
                 
         
@@ -922,7 +1240,7 @@ def settingzs(win):
 #init
 if __name__ == '__main__':
     main()
-    main()
+
         
 
 
