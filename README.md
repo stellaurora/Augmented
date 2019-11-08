@@ -2,8 +2,8 @@
 [![badge](https://img.shields.io/badge/A%20jean1398reborn-project-informational)
 ](https://www.github.com/jean1398reborn)
 [![badge](https://img.shields.io/badge/Completely-Horrid-critical)](https://www.youtube.com/watch?v=dQw4w9WgXcQ)
-[![badge](https://img.shields.io/static/v1?label=Build&message=Functional&color=sucess)](https://www.youtube.com/watch?v=bAgmGZ9iQ2Y)
-[![badge](https://img.shields.io/static/v1?label=Bugs&message=1&color=critical)](https://www.youtube.com/watch?v=8GW6sLrK40k)
+[![haha fool get rick rolled](https://img.shields.io/static/v1?label=Build&message=Functional&color=sucess)](https://www.youtube.com/watch?v=bAgmGZ9iQ2Y)
+[![badge](https://img.shields.io/static/v1?label=Bugs&message=0&color=critical)](https://www.youtube.com/watch?v=8GW6sLrK40k)
 
 Augmented Ascension
 ======
