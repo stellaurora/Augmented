@@ -1,0 +1,2 @@
+w,a,s,d,1,2,3,4
+up,left,down,right,o,p,[,]
