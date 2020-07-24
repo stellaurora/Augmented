@@ -421,7 +421,8 @@ def game(player1,player2,mapselected,win,items,particles,mapselectedd): #actual 
     for c in p2listasset:
         value = p1m[0]+'/'+c
         p2assets.append(value)
-    frame.load([p1assets,p2assets],win,[overlays,overlaynames,ovamount,'Overlays/'+mapselectedd]) #loads the map and overlays to make a smoother experience
+    # frame.load([p1assets,p2assets],win,[overlays,overlaynames,ovamount,'Overlays/'+mapselectedd]) #loads the map and overlays to make a smoother experience
+    frame.clearupdate([pygame.image.load('Maps/'+mapselectedd+'.png'),top],win)
     running = True
     bleed = {'p1': [], 'p2': []}
     locations = {'p1': (350,400) ,'p2': (850,300)}
@@ -1154,6 +1155,10 @@ def selection(win,items,particles):
     firstime = False
     running = True
     font = pygame.font.Font("Fox Cavalier.otf",44)
+    select_imgs = []
+    for paragonimg in movesets:
+        select_imgs.append(pygame.image.load(paragonimg[0]+'/front.png'))
+
     for mapz in maps:
         mapszd.append(mapz)
     while running:
@@ -1171,7 +1176,7 @@ def selection(win,items,particles):
                     sys.exit()
                     
         win.blit(bg,(0,0))
-        pygame.display.update()
+        # pygame.display.update()
         i=0
         mouse = (isdown,0,0)
         pos = pygame.mouse.get_pos()
@@ -1190,8 +1195,8 @@ def selection(win,items,particles):
                 text2 = font.render(str(paragon[0]),True,(114,137,218))
                 val = win.blit(text1,(115,153+84*i))
                 win.blit(text2,(113,150+84*i))
-                win.blit(pygame.image.load(paragon[0]+'/front.png'),(450,150+80*i))
-                pygame.display.update()
+                win.blit(select_imgs[0],(450,150+80*i))
+                #pygame.display.update()
                 vals.append(val)
                 i+=1
         if selectime == 2:
@@ -1200,15 +1205,13 @@ def selection(win,items,particles):
                 text2 = font.render(str(paragon[0]),True,(218,114,137))
                 val = win.blit(text1,(115,153+84*i))
                 win.blit(text2,(113,150+84*i))
-                win.blit(pygame.image.load(paragon[0]+'/front.png'),(450,150+80*i))
-                pygame.display.update()
+                win.blit(select_imgs[0],(450,150+80*i))
                 vals.append(val)
                 i+=1
         if selectime == 1:
             for val in vals:
                 if val.collidepoint(pos):
                     win.blit(pygame.image.load(str(movesets[vals.index(val)][0])+'/selectside.png'),(1280-409,0))
-                    pygame.display.update()
                     if mouse[0] == 1:
                         selected['p1'] = vals.index(val)
                         selectime += 1
@@ -1217,7 +1220,6 @@ def selection(win,items,particles):
             for val in vals:
                 if val.collidepoint(pos):
                     win.blit(pygame.image.load(str(movesets[vals.index(val)][0])+'/selectside.png'),(1280-409,0))
-                    pygame.display.update()
                     if mouse[0] == 1:
                         if firstime == True:
                             firstime = False
@@ -1225,10 +1227,7 @@ def selection(win,items,particles):
                         else:
                             selected['p2'] = vals.index(val)
                             running = False
-            
-                            
-                            
-                        
+                                    
                             
                             
         pygame.display.update()
