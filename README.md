@@ -24,3 +24,4 @@ A symplistic rpg created using:
 Credits:
 -----
 [Dippyshere](https://github.com/dippyshere)<br>
+[MuseHD](https://github.com/museHD)<br>
