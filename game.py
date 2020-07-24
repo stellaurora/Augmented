@@ -28,8 +28,6 @@ defaultbinds = [
 playerscore = {'p1': 0,'p2':0}
 #MAPS
 maplist = os.listdir('Maps')
-if system == 'Darwin':
-    del maplist[maplist.index('.DS_Store')]
 maps=[]
 for mapp in maplist:
     maps.append(pygame.image.load('Maps/'+str(mapp)))
@@ -400,23 +398,16 @@ def game(player1,player2,mapselected,win,items,particles,mapselectedd): #actual 
     p2characterassets = [pygame.image.load(p2m[0]+'/'+'front.png'),pygame.image.load(p2m[0]+'/'+'back.png')]
     folderoverlays = os.listdir('Overlays')
     overlays = os.listdir('Overlays/'+str(mapselectedd))
-    if str(system) == 'Darwin':
-        itemzz  = overlays.index('.DS_Store')
-        del overlays[itemzz]
     overlaynames=[]
     ovamount = 0
     for i in overlays:
         overlaynames.append(ast.literal_eval(os.path.splitext(i)[0]))
         ovamount+=1
     p1assets=[]
-    if str(system) == 'Darwin':
-        del p1listasset[p1listasset.index('.DS_Store')]
     for c in p1listasset:
         value = p1m[0]+'/'+c
         p1assets.append(value)
     p2listasset = os.listdir(p2m[0])
-    if str(system) == 'Darwin':
-        del p2listasset[p2listasset.index('.DS_Store')]
     p2assets=[]
     for c in p2listasset:
         value = p1m[0]+'/'+c
